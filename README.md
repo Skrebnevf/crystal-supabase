@@ -1,6 +1,6 @@
-# crystal-supabase
+# Supabase Crystal Client
 
-TODO: Write a description here
+Crystal client for Supabase REST API supporting basic CRUD operations with query building.
 
 ## Installation
 
@@ -20,11 +20,85 @@ TODO: Write a description here
 require "crystal-supabase"
 ```
 
-TODO: Write usage instructions here
+### Select
 
-## Development
+```crystal
+response = client
+  .from("users")
+  .select("*")
+  .eq("active", "true")
+  .execute()
+puts response
+```
 
-TODO: Write development instructions here
+### Insert
+
+```crystal
+payload = %({"name": "Alice", "age": 30})
+response = client
+  .from("users")
+  .insert(payload)
+  .execute()
+puts response
+```
+
+### Update
+
+```crystal
+payload = %({"name": "Charlie"})
+response = client
+  .from("users")
+  .eq("id", "1")
+  .update(payload)
+  .execute()
+puts response
+```
+
+### Upsert
+
+```crystal
+payload = %({"id": 1, "name": "Bob"})
+response = client
+  .from("users")
+  .upsert(payload, ["id"])
+  .execute()
+puts response
+```
+
+### Delete
+
+```crystal
+response = client
+  .from("users")
+  .eq("id", "1")
+  .delete()
+  .execute()
+puts response
+```
+
+### Query Filters Examples
+
+```crystal
+response = client
+  .from("products")
+  .select("id,name,price")
+  .gt("price", "100")
+  .lt("price", "500")
+  .like("name", "%book%")
+  .order_desc("price")
+  .limit(10)
+  .execute()
+puts response
+```
+
+## TODO
+
+- [x] Add basic CRUD
+- [x] Add filters
+- [ ] Implement bulk insert for multiple rows
+- [ ] Implement bulk upsert for multiple rows
+- [ ] Implement bulk update for multiple rows
+- [ ] Implement bulk delete for multiple rows
 
 ## Contributing
 
