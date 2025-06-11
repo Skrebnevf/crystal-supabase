@@ -111,3 +111,4 @@ puts response
 ## Contributors
 
 - [f.skrebnev](https://github.com/Skrebnevf) - creator and maintainer
+- [@hope_you_die](https://t.me/hope_you_die) - TG
