@@ -95,10 +95,11 @@ puts response
 
 - [x] Add basic CRUD
 - [x] Add filters
-- [ ] Implement bulk insert for multiple rows
-- [ ] Implement bulk upsert for multiple rows
-- [ ] Implement bulk update for multiple rows
-- [ ] Implement bulk delete for multiple rows
+- [x] Implement bulk for multiple rows
+- [ ] Add SQL query request
+- [ ] Add call of Postgres functions
+- [ ] Add modifiers
+
 
 ## Contributing
 
