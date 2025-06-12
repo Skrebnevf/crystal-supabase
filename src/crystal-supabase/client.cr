@@ -70,11 +70,21 @@ class Supabase::Client
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Implement bulk insert for multiple rows
   #
   # Example:
   # ```
   # payload = %({"name": "Alice", "age": 30})
+  # response = client
+  #   .from("users")
+  #   .insert(payload)
+  #   .execute
+  # puts response
+  #
+  # Bulk insert
+  # payload = %([
+  #   {"id": 1, "name": "Bob"},
+  #   {"id": 2, "name": "Charlie"}
+  # ])
   # response = client
   #   .from("users")
   #   .insert(payload)
@@ -98,11 +108,21 @@ class Supabase::Client
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Implement bulk upsert for multiple rows
   #
   # Example:
   # ```
   # payload = %({"id": 1, "name": "Bob"})
+  # response = client
+  #   .from("users")
+  #   .upsert(payload, ["id"])
+  #   .execute
+  # puts response
+  #
+  # Bulk upsert
+  # payload = %([
+  #   {"id": 1, "name": "Bob"},
+  #   {"id": 2, "name": "Charlie"}
+  # ])
   # response = client
   #   .from("users")
   #   .upsert(payload, ["id"])
@@ -114,7 +134,6 @@ class Supabase::Client
     merge["Prefer"] = "resolution=merge-duplicates"
     conflict_col = on_conflict.join(",")
     url = "#{@url}#{@version}#{query.table}?on_conflict=#{conflict_col}"
-    puts url
 
     response = HTTP::Client.post(url, headers: merge, body: payload)
 
@@ -130,7 +149,6 @@ class Supabase::Client
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Consider support for bulk update by primary key
   #
   # Example:
   # ```
@@ -160,7 +178,6 @@ class Supabase::Client
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Support bulk delete using filters or array of conditions
   #
   # Example:
   # ```
@@ -168,6 +185,13 @@ class Supabase::Client
   #   .from("users")
   #   .eq("id", "1")
   #   .delete
+  #
+  # Bulk delete
+  # response = client
+  #   .from("users")
+  #   .in_("id", [1, 2])
+  #   .delete()
+  #   .execute
   # puts response
   # ```
   def delete(query : Query) : String
@@ -175,7 +199,7 @@ class Supabase::Client
     url += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
     response = HTTP::Client.delete(url, headers: headers)
-
+    
     if response.status.success?
       response.body
     else
