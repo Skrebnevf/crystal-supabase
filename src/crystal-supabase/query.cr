@@ -46,11 +46,21 @@ class Supabase::Query
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Implement bulk insert for multiple rows
   #
   # Example:
   # ```
   # payload = %({"name": "Alice", "age": 30})
+  # response = client
+  #   .from("users")
+  #   .insert(payload)
+  #   .execute
+  # puts response
+  #
+  # Bulk insert
+  # payload = %([
+  #   {"id": 1, "name": "Bob"},
+  #   {"id": 2, "name": "Charlie"}
+  # ])
   # response = client
   #   .from("users")
   #   .insert(payload)
@@ -68,11 +78,21 @@ class Supabase::Query
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Implement bulk upsert for multiple rows
   #
   # Example:
   # ```
   # payload = %({"id": 1, "name": "Bob"})
+  # response = client
+  #   .from("users")
+  #   .upsert(payload, ["id"])
+  #   .execute
+  # puts response
+  #
+  # Bulk upsert
+  # payload = %([
+  #   {"id": 1, "name": "Bob"},
+  #   {"id": 2, "name": "Charlie"}
+  # ])
   # response = client
   #   .from("users")
   #   .upsert(payload, ["id"])
@@ -91,7 +111,6 @@ class Supabase::Query
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Consider support for bulk update by primary key
   #
   # Example:
   # ```
@@ -114,7 +133,6 @@ class Supabase::Query
   # Returns response body as `String`
   # Raises error if request fails.
   #
-  # TODO: Support bulk delete using filters or array of conditions
   #
   # Example:
   # ```
@@ -122,6 +140,13 @@ class Supabase::Query
   #   .from("users")
   #   .eq("id", "1")
   #   .delete
+  #
+  # Bulk delete
+  # response = client
+  #   .from("users")
+  #   .in_("id", [1, 2])
+  #   .delete()
+  #   .execute
   # puts response
   # ```
   def delete
@@ -250,7 +275,7 @@ class Supabase::Query
   #   .execute
   # puts response
   # ```
-  def in_(column : String, values : Array(String))
+  def in_(column : String, values : Array(String | Int))
     joined = values.join(",")
     @conditions << "#{column}=in.(#{joined})"
     self
