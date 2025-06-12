@@ -29,12 +29,12 @@ class Supabase::Query
   # Example:
   # ```
   # response = client
-  #    .from("users")
-  #    .select("*")
-  #    .eq("active", "true")
-  #    .execute()
-  # puts response 
-  #```
+  #   .from("users")
+  #   .select("*")
+  #   .eq("active", "true")
+  #   .execute
+  # puts response
+  # ```
   def select(fields : String)
     @select_fields = fields
     @operation = Operation::Select
@@ -54,7 +54,7 @@ class Supabase::Query
   # response = client
   #   .from("users")
   #   .insert(payload)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def insert(payload : String)
@@ -76,7 +76,7 @@ class Supabase::Query
   # response = client
   #   .from("users")
   #   .upsert(payload, ["id"])
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def upsert(payload : String, on_conflict : Array(String))
@@ -100,7 +100,7 @@ class Supabase::Query
   #   .from("users")
   #   .eq("id", "1")
   #   .update(payload)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def update(payload : String)
@@ -121,7 +121,7 @@ class Supabase::Query
   # response = client
   #   .from("users")
   #   .eq("id", "1")
-  #   .delete()
+  #   .delete
   # puts response
   # ```
   def delete
@@ -136,7 +136,7 @@ class Supabase::Query
   #   .from("users")
   #   .select("*")
   #   .eq("role", "admin")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def eq(column : String, value : String)
@@ -150,7 +150,7 @@ class Supabase::Query
   #   .from("users")
   #   .select("*")
   #   .neq("status", "inactive")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def neq(column : String, value : String)
@@ -164,7 +164,7 @@ class Supabase::Query
   #   .from("users")
   #   .select("*")
   #   .gt("age", "18")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def gt(column : String, value : String)
@@ -178,7 +178,7 @@ class Supabase::Query
   #   .from("users")
   #   .select("*")
   #   .gte("score", "70")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def gte(column : String, value : String)
@@ -192,7 +192,7 @@ class Supabase::Query
   #   .from("products")
   #   .select("*")
   #   .lt("price", "100")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def lt(column : String, value : String)
@@ -206,22 +206,22 @@ class Supabase::Query
   #   .from("products")
   #   .select("*")
   #   .lte("price", "500")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def lte(column : String, value : String)
     add_filter(column, "lte", value)
   end
 
-    #
-    # ```
-    # response = client
-    #   .from("products")
-    #   .select("*")
-    #   .lte("price", "500")
-    #   .execute()
-    # puts response
-    # ```
+  #
+  # ```
+  # response = client
+  #   .from("products")
+  #   .select("*")
+  #   .lte("price", "500")
+  #   .execute
+  # puts response
+  # ```
   def like(column : String, pattern : String)
     add_filter(column, "like", pattern)
   end
@@ -233,7 +233,7 @@ class Supabase::Query
   #   .from("articles")
   #   .select("*")
   #   .ilike("title", "%crystal%")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def ilike(column : String, pattern : String)
@@ -247,7 +247,7 @@ class Supabase::Query
   #   .from("orders")
   #   .select("*")
   #   .in_("status", ["pending", "shipped"])
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def in_(column : String, values : Array(String))
@@ -278,7 +278,7 @@ class Supabase::Query
   #   .from("users")
   #   .select("*")
   #   .not("email", "like", "%@test.com")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def not(column : String, operator : String, value : String)
@@ -293,7 +293,7 @@ class Supabase::Query
   #   .from("tasks")
   #   .select("*")
   #   .order_asc("created_at")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def order_asc(column : String)
@@ -308,7 +308,7 @@ class Supabase::Query
   #   .from("tasks")
   #   .select("*")
   #   .order_desc("created_at")
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def order_desc(column : String)
@@ -323,7 +323,7 @@ class Supabase::Query
   #   .from("logs")
   #   .select("*")
   #   .limit(10)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def limit(count : Int32)
@@ -339,7 +339,7 @@ class Supabase::Query
   #   .select("*")
   #   .offset(20)
   #   .limit(10)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def offset(count : Int32)

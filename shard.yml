@@ -4,11 +4,14 @@ version: 0.1.0
 authors:
   - f.skrebnev <f.skrebnev@getic.com>
 
-crystal: '>= 1.16.3'
+crystal: ">= 1.16.3"
 
 development_dependencies:
   webmock:
     github: manastech/webmock.cr
+    branch: master
+  crystalline:
+    github: elbywan/crystalline
     branch: master
 
 license: MIT

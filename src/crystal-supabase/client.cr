@@ -46,12 +46,12 @@ class Supabase::Client
   # Example:
   # ```
   # response = client
-  #    .from("users")
-  #    .select("*")
-  #    .eq("active", "true")
-  #    .execute()
-  # puts response 
-  #```
+  #   .from("users")
+  #   .select("*")
+  #   .eq("active", "true")
+  #   .execute
+  # puts response
+  # ```
   def select(query : Query) : String
     query_str = "select=#{query.select_fields}"
     query_str += "&#{query.conditions.join("&")}" unless query.conditions.empty?
@@ -78,7 +78,7 @@ class Supabase::Client
   # response = client
   #   .from("users")
   #   .insert(payload)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def insert(query : Query, payload : String) : String
@@ -106,7 +106,7 @@ class Supabase::Client
   # response = client
   #   .from("users")
   #   .upsert(payload, ["id"])
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def upsert(query : Query, payload : String, on_conflict : Array(String))
@@ -139,7 +139,7 @@ class Supabase::Client
   #   .from("users")
   #   .eq("id", "1")
   #   .update(payload)
-  #   .execute()
+  #   .execute
   # puts response
   # ```
   def update(query : Query, payload : String) : String
@@ -167,7 +167,7 @@ class Supabase::Client
   # response = client
   #   .from("users")
   #   .eq("id", "1")
-  #   .delete()
+  #   .delete
   # puts response
   # ```
   def delete(query : Query) : String
