@@ -91,6 +91,13 @@ response = client
 puts response
 ```
 
+### RPC
+
+```crystal
+response = client.rpc("hello_world")
+puts response
+```
+
 ## TODO
 
 - [x] Add basic CRUD
