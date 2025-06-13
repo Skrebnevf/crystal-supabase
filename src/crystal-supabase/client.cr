@@ -38,6 +38,23 @@ class Supabase::Client
     Query.new(self, table)
   end
 
+  # Execute a RPC request
+  #
+  # Returns response body as `String`
+  # Raises error if request fails.
+  # response = client.rpc("hello_world")
+  # puts response
+  def rpc(rpc : String) : String
+    url = "#{@url}#{@version}rpc/#{rpc}"
+
+    response = HTTP::Client.post(url, headers)
+    if response.status.success?
+      response.body
+    else
+      raise "RPC failed - HTTP #{response.status_code}: #{response.body}"
+    end
+  end
+
   # Executes a SELECT query
   #
   # Returns response body as `String`
@@ -199,7 +216,7 @@ class Supabase::Client
     url += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
     response = HTTP::Client.delete(url, headers: headers)
-    
+
     if response.status.success?
       response.body
     else
