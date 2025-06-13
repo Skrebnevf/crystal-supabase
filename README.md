@@ -96,8 +96,7 @@ puts response
 - [x] Add basic CRUD
 - [x] Add filters
 - [x] Implement bulk for multiple rows
-- [ ] Add SQL query request
-- [ ] Add call of Postgres functions
+- [x] Add call of Postgres functions
 - [ ] Add modifiers
 
 
