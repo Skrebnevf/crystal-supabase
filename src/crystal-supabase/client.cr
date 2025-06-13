@@ -1,5 +1,6 @@
 require "http/client"
 require "./query"
+require "./types"
 
 class Supabase::Client
   property url : String
@@ -51,7 +52,8 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "RPC failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
   end
 
@@ -69,7 +71,7 @@ class Supabase::Client
   #   .execute
   # puts response
   # ```
-  def select(query : Query) : String
+  def select(query : Query) : String | ExecuteError
     query_str = "select=#{query.select_fields}"
     query_str += "&#{query.conditions.join("&")}" unless query.conditions.empty?
     url = "#{@url}#{@version}#{query.table}?#{query_str}"
@@ -78,7 +80,8 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "SELECT failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
   end
 
@@ -116,7 +119,8 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "INSERT failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
   end
 
@@ -157,7 +161,8 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "UPSERT failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
   end
 
@@ -186,7 +191,8 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "UPDATE failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
   end
 
@@ -220,7 +226,18 @@ class Supabase::Client
     if response.status.success?
       response.body
     else
-      raise "DELETE failed - HTTP #{response.status_code}: #{response.body}"
+      error = ExecuteError.from_json(response.body)
+      raise error_msg(error)
     end
+  end
+
+  private def error_msg(error : ExecuteError)
+    error_msg = <<-MESSAGE
+    SELECT query faild
+      Message: #{error.message}
+      Hint: #{error.hint}
+      Details: #{error.details}
+      Code: #{error.code}
+    MESSAGE
   end
 end
