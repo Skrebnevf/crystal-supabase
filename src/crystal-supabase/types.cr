@@ -2,8 +2,8 @@ require "json"
 
 struct ExecuteError
   include JSON::Serializable
-  
-  @[JSON::Field(key: "hint")]   
+
+  @[JSON::Field(key: "hint")]
   property hint : String | Nil
 
   @[JSON::Field(key: "message")]
