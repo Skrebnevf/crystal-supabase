@@ -1,8 +1,10 @@
 require "http/client"
 require "./query"
 require "./types"
+require "json"
+require "./client_builder.cr"
 
-class Supabase::Client
+class Supabase::Client < Supabase::ClientBuilder
   property url : String
   property api_key : String
 
@@ -13,7 +15,7 @@ class Supabase::Client
   # Raises `ArgumentError` if `url` or `api_key` is empty.
   def initialize(@url : String, @api_key : String)
     if @url.empty? || @api_key.empty?
-      raise ArgumentError.new("url or api key must not be empty")
+      raise ArgumentError.new "url or api key must not be empty"
     end
   end
 
@@ -29,38 +31,44 @@ class Supabase::Client
 
   # Initializes a query for the given table
   #
-  # Raises `ArgumentError` if table name is empty.
+  # Raises `ArgumentError` if table name is empty
   #
   # ```
   # query = client.from("users")
   # ```
   def from(table : String) : Query
-    raise ArgumentError.new("table must be not empty") if table.empty?
+    raise ArgumentError.new "table must be not empty" if table.strip.empty?
     Query.new(self, table)
   end
 
   # Execute a RPC request
+  # Argument rpc - name of supabase function
   #
   # Returns response body as `String`
-  # Raises error if request fails.
+  # Raises error if request fails
+  # Raises error if argument is empty
+  #
   # response = client.rpc("hello_world")
   # puts response
   def rpc(rpc : String) : String
-    url = "#{@url}#{@version}rpc/#{rpc}"
+    raise ArgumentError.new "rpc must not be empty" if rpc.strip.empty?
 
-    response = HTTP::Client.post(url, headers)
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    endpoints = "#{@version}rpc/#{rpc}"
+    response_body = with_http_client @url do |client|
+      response = client.post(endpoints, headers: headers)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json response.body
+        raise error_msg("RPC", error)
+      end
     end
   end
 
   # Executes a SELECT query
   #
   # Returns response body as `String`
-  # Raises error if request fails.
+  # Raises error if request fails
   #
   # Example:
   # ```
@@ -71,24 +79,27 @@ class Supabase::Client
   #   .execute
   # puts response
   # ```
-  def select(query : Query) : String | ExecuteError
+  def select(query : Query) : String
     query_str = "select=#{query.select_fields}"
     query_str += "&#{query.conditions.join("&")}" unless query.conditions.empty?
-    url = "#{@url}#{@version}#{query.table}?#{query_str}"
+    endpoints = "#{@version}#{query.table}?#{query_str}"
 
-    response = HTTP::Client.get(url, headers: headers)
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    response_body = with_http_client @url do |client|
+      response = client.get(endpoints, headers: headers)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json response.body
+        raise error_msg("SELECT", error)
+      end
     end
   end
 
   # Executes an INSERT query with the given JSON payload
   #
   # Returns response body as `String`
-  # Raises error if request fails.
+  # Raises error if request fails
+  # Raises error if payload is empty
   #
   #
   # Example:
@@ -112,22 +123,26 @@ class Supabase::Client
   # puts response
   # ```
   def insert(query : Query, payload : String) : String
-    url = "#{@url}#{@version}#{query.table}"
+    raise ArgumentError.new "payload must not be empty" if payload.strip.empty?
 
-    response = HTTP::Client.post(url, headers: headers, body: payload)
-
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    endpoints = "#{@version}#{query.table}"
+    response_body = with_http_client @url do |client|
+      response = client.post(endpoints, headers: headers, body: payload)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json(response.body)
+        raise error_msg("INSERT", error)
+      end
     end
   end
 
   # Executes an UPSERT query with conflict resolution on specified columns
   #
   # Returns response body as `String`
-  # Raises error if request fails.
+  # Raises error if request fails
+  # Raises error if arguments is empty
+  # Raises error if on_conflict has dupblicetes
   #
   #
   # Example:
@@ -150,26 +165,32 @@ class Supabase::Client
   #   .execute
   # puts response
   # ```
-  def upsert(query : Query, payload : String, on_conflict : Array(String))
+  def upsert(query : Query, payload : String, on_conflict : Array(String)) : String
+    raise ArgumentError.new "payload must not be empty" if payload.strip.empty?
+    raise ArgumentError.new "on_conflict must not be empty" if on_conflict.empty?
+    raise ArgumentError.new("duplicate fields in on_conflict") unless on_conflict.uniq.size == on_conflict.size
+
     merge = headers.clone
     merge["Prefer"] = "resolution=merge-duplicates"
     conflict_col = on_conflict.join(",")
-    url = "#{@url}#{@version}#{query.table}?on_conflict=#{conflict_col}"
+    endpoints = "#{@version}#{query.table}?on_conflict=#{conflict_col}"
 
-    response = HTTP::Client.post(url, headers: merge, body: payload)
-
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    response_body = with_http_client @url do |client|
+      response = client.post(endpoints, headers: merge, body: payload)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json(response.body)
+        raise error_msg("UPSERT", error)
+      end
     end
   end
 
   # Executes an UPDATE query with the given JSON payload
   #
   # Returns response body as `String`
-  # Raises error if request fails.
+  # Raises error if request fails
+  # Raises error if payload argument is empty
   #
   #
   # Example:
@@ -183,16 +204,19 @@ class Supabase::Client
   # puts response
   # ```
   def update(query : Query, payload : String) : String
-    url = "#{@url}#{@version}#{query.table}"
-    url += "?#{query.conditions.join("&")}" unless query.conditions.empty?
+    raise ArgumentError.new "payload must not be empty" if payload.strip.empty?
 
-    response = HTTP::Client.patch(url, headers: headers, body: payload)
+    endpoints = "#{@version}#{query.table}"
+    endpoints += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    response_body = with_http_client @url do |client|
+      response = client.patch(endpoints, headers: headers, body: payload)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json(response.body)
+        raise error_msg("UPDATE", error)
+      end
     end
   end
 
@@ -218,22 +242,23 @@ class Supabase::Client
   # puts response
   # ```
   def delete(query : Query) : String
-    url = "#{@url}#{@version}#{query.table}"
-    url += "?#{query.conditions.join("&")}" unless query.conditions.empty?
+    endpoints = "#{@url}#{@version}#{query.table}"
+    endpoints += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
-    response = HTTP::Client.delete(url, headers: headers)
-
-    if response.status.success?
-      response.body
-    else
-      error = ExecuteError.from_json(response.body)
-      raise error_msg(error)
+    response_body = with_http_client @url do |client|
+      response = client.delete(endpoints, headers: headers)
+      if response.status.success?
+        response.body
+      else
+        error = ExecuteError.from_json(response.body)
+        raise error_msg("DELETE", error)
+      end
     end
   end
 
-  private def error_msg(error : ExecuteError)
+  private def error_msg(method : String, error : ExecuteError)
     error_msg = <<-MESSAGE
-    SELECT query faild
+    #{method} query faild
       Message: #{error.message}
       Hint: #{error.hint}
       Details: #{error.details}
