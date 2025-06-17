@@ -1,8 +1,7 @@
 # Supabase Crystal Client
 
-![Release](https://img.shields.io/github/v/release/Skrebnevf/crystal-supabase)  
-![License](https://img.shields.io/github/license/Skrebnevf/crystal-supabase)  
-![Issues](https://img.shields.io/github/issues/Skrebnevf/crystal-supabase)  
+![License](https://img.shields.io/github/license/Skrebnevf/crystal-supabase)
+![Issues](https://img.shields.io/github/issues/Skrebnevf/crystal-supabase)
 ![Crystal](https://img.shields.io/badge/language-Crystal-000?logo=crystal&logoColor=white)
 
 Crystal client for Supabase REST API supporting basic CRUD operations with query building.  
