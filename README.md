@@ -1,8 +1,17 @@
 # Supabase Crystal Client
 
-[![License](https://img.shields.io/github/license/Skrebnevf/crystal-supabase)](https://github.com/Skrebnevf/crystal-supabase/blob/main/LICENSE)
-[![Crystal](https://img.shields.io/badge/language-Crystal-000?logo=crystal&logoColor=white)](https://crystal-lang.org/)
-[![Last Commit](https://img.shields.io/github/last-commit/Skrebnevf/crystal-supabase)](https://github.com/Skrebnevf/crystal-supabase/commits/main)  
+<p align="center">
+  <a href="https://github.com/Skrebnevf/crystal-supabase/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Skrebnevf/crystal-supabase" alt="License">
+  </a>
+  <a href="https://crystal-lang.org/">
+    <img src="https://img.shields.io/badge/language-Crystal-000?logo=crystal&logoColor=white" alt="Crystal">
+  </a>
+  <a href="https://github.com/Skrebnevf/crystal-supabase/commits/main">
+    <img src="https://img.shields.io/github/last-commit/Skrebnevf/crystal-supabase" alt="Last Commit">
+  </a>
+</p>
+
 Crystal client for Supabase REST API supporting basic CRUD operations with query building.  
 ## Installation
 
