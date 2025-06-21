@@ -6,7 +6,7 @@
 [![Last Commit](https://img.shields.io/github/last-commit/Skrebnevf/crystal-supabase)](https://github.com/Skrebnevf/crystal-supabase/commits/main)
 
 Crystal client for Supabase REST API supporting basic CRUD operations with query building.  
-## Installation
+##🔨 Installation
 
 1. Add the dependency to your `shard.yml`:
 
@@ -18,7 +18,7 @@ Crystal client for Supabase REST API supporting basic CRUD operations with query
 
 2. Run `shards install`
 
-## Usage
+##🖥️ Usage
 
 ```crystal
 require "crystal-supabase"
@@ -102,7 +102,7 @@ response = client.rpc("hello_world")
 puts response
 ```
 
-## TODO
+##✔️ TODO
 
 - [x] Add basic CRUD
 - [x] Add filters
@@ -111,7 +111,7 @@ puts response
 - [ ] Add modifiers
 
 
-## Contributing
+##🤝 Contributing
 
 1. Fork it (<https://github.com/Skrebnevf/crystal-supabase/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
@@ -119,7 +119,7 @@ puts response
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
-## Contributors
+##🏠 Contributors
 
 - [f.skrebnev](https://github.com/Skrebnevf) - creator and maintainer
 - [@hope_you_die](https://t.me/hope_you_die) - TG
