@@ -54,14 +54,11 @@ class Supabase::Client < Supabase::ClientBuilder
     raise ArgumentError.new "rpc must not be empty" if rpc.strip.empty?
 
     endpoints = "#{@version}rpc/#{rpc}"
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.post(endpoints, headers: headers)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json response.body
-        raise error_msg("RPC", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("SELECT", error)
     end
   end
 
@@ -84,14 +81,11 @@ class Supabase::Client < Supabase::ClientBuilder
     query_str += "&#{query.conditions.join("&")}" unless query.conditions.empty?
     endpoints = "#{@version}#{query.table}?#{query_str}"
 
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.get(endpoints, headers: headers)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json response.body
-        raise error_msg("SELECT", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("SELECT", error)
     end
   end
 
@@ -128,12 +122,9 @@ class Supabase::Client < Supabase::ClientBuilder
     endpoints = "#{@version}#{query.table}"
     response_body = with_http_client @url do |client|
       response = client.post(endpoints, headers: headers, body: payload)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json(response.body)
-        raise error_msg("INSERT", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("INSERT", error)
     end
   end
 
@@ -168,7 +159,7 @@ class Supabase::Client < Supabase::ClientBuilder
   def upsert(query : Query, payload : String, on_conflict : Array(String)) : String
     raise ArgumentError.new "payload must not be empty" if payload.strip.empty?
     raise ArgumentError.new "on_conflict must not be empty" if on_conflict.empty?
-    raise ArgumentError.new("duplicate fields in on_conflict") unless on_conflict.uniq.size == on_conflict.size
+    raise ArgumentError.new "duplicate fields in on_conflict" unless on_conflict.uniq.size == on_conflict.size
 
     merge = headers.clone
     merge["Prefer"] = "resolution=merge-duplicates"
@@ -177,12 +168,9 @@ class Supabase::Client < Supabase::ClientBuilder
 
     response_body = with_http_client @url do |client|
       response = client.post(endpoints, headers: merge, body: payload)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json(response.body)
-        raise error_msg("UPSERT", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("UPSERT", error)
     end
   end
 
@@ -211,12 +199,9 @@ class Supabase::Client < Supabase::ClientBuilder
 
     response_body = with_http_client @url do |client|
       response = client.patch(endpoints, headers: headers, body: payload)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json(response.body)
-        raise error_msg("UPDATE", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("UPDATE", error)
     end
   end
 
@@ -247,12 +232,9 @@ class Supabase::Client < Supabase::ClientBuilder
 
     response_body = with_http_client @url do |client|
       response = client.delete(endpoints, headers: headers)
-      if response.status.success?
-        response.body
-      else
-        error = ExecuteError.from_json(response.body)
-        raise error_msg("DELETE", error)
-      end
+      return response.body if response.status.success?
+      error = ExecuteError.from_json response.body
+      raise error_msg("DELETE", error)
     end
   end
 
