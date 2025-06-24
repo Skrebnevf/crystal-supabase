@@ -120,7 +120,7 @@ class Supabase::Client < Supabase::ClientBuilder
     raise ArgumentError.new "payload must not be empty" if payload.strip.empty?
 
     endpoints = "#{@version}#{query.table}"
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.post(endpoints, headers: headers, body: payload)
       return response.body if response.status.success?
       error = ExecuteError.from_json response.body
@@ -166,7 +166,7 @@ class Supabase::Client < Supabase::ClientBuilder
     conflict_col = on_conflict.join(",")
     endpoints = "#{@version}#{query.table}?on_conflict=#{conflict_col}"
 
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.post(endpoints, headers: merge, body: payload)
       return response.body if response.status.success?
       error = ExecuteError.from_json response.body
@@ -197,7 +197,7 @@ class Supabase::Client < Supabase::ClientBuilder
     endpoints = "#{@version}#{query.table}"
     endpoints += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.patch(endpoints, headers: headers, body: payload)
       return response.body if response.status.success?
       error = ExecuteError.from_json response.body
@@ -230,7 +230,7 @@ class Supabase::Client < Supabase::ClientBuilder
     endpoints = "#{@url}#{@version}#{query.table}"
     endpoints += "?#{query.conditions.join("&")}" unless query.conditions.empty?
 
-    response_body = with_http_client @url do |client|
+    with_http_client @url do |client|
       response = client.delete(endpoints, headers: headers)
       return response.body if response.status.success?
       error = ExecuteError.from_json response.body
